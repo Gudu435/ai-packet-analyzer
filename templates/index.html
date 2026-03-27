@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Packet Analyzer</title>
+</head>
+<body>
+    <h2>Upload PCAP File</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="pcap" required>
+        <button type="submit">Analyze</button>
+    </form>
+
+    {% if result %}
+        <h3>Analysis Result:</h3>
+        <pre>{{ result }}</pre>
+    {% endif %}
+</body>
+</html>
