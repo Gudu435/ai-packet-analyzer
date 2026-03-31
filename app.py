@@ -1,27 +1,35 @@
-from flask import Flask, request, render_template
+from flask import Flask, render_template, request
 import os
 from analyzer import analyze_pcap
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/', methods=['GET', 'POST'])
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+@app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == 'POST':
-        file = request.files.get('pcap')
+    result = None
 
-        if not file or file.filename == '':
-            return "No file selected"
+    if request.method == "POST":
+        print("FILES:", request.files)
 
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(filepath)
+        if "pcap" not in request.files:
+            result = "No file selected"
+        else:
+            file = request.files["pcap"]
 
-        result = analyze_pcap(filepath)
+            if file.filename == "":
+                result = "No file selected"
+            else:
+                file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+                file.save(file_path)
 
-        return render_template('index.html', result=result)
+                result = analyze_pcap(file_path)
 
-    return render_template('index.html')
+    return render_template("index.html", result=result)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
